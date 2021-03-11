@@ -3,6 +3,14 @@
   "description": "",
   "license": "MIT",
   "author": "ofk <ofkjpn+npm@gmail.com> (https://github.com/ofk/)",
+  "homepage": "https://github.com/ofk/dom-hotkey#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:ofk/dom-hotkey.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ofk/dom-hotkey/issues"
+  },
   "version": "1.0.0",
   "main": "dist/index.js",
   "files": [
