@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createHotkeyStrings = exports.createHotkeyStringsFromState = exports.metaModifierKey = void 0;
 var hotkeyState_1 = require("./hotkeyState");
-exports.metaModifierKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+exports.metaModifierKey = /Mac|iPod|iPhone|iPad/.test(typeof navigator !== 'undefined' ? navigator.platform : '');
 function isModkey(_a) {
     var ctrlKey = _a.ctrlKey, metaKey = _a.metaKey;
     return exports.metaModifierKey ? /* istanbul ignore next */ !ctrlKey && metaKey : ctrlKey && !metaKey;
