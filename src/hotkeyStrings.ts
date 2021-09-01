@@ -2,7 +2,9 @@ import { HotkeyState, createHotkeyState } from './hotkeyState';
 
 export type HotkeyStrings = [string, ...string[]];
 
-export const metaModifierKey = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+export const metaModifierKey = /Mac|iPod|iPhone|iPad/.test(
+  typeof navigator !== 'undefined' ? navigator.platform : ''
+);
 
 function isModkey({ ctrlKey, metaKey }: HotkeyState): boolean {
   return metaModifierKey ? /* istanbul ignore next */ !ctrlKey && metaKey : ctrlKey && !metaKey;
