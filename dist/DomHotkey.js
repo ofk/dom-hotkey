@@ -10,12 +10,14 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setup = exports.DomHotkey = void 0;
@@ -42,7 +44,7 @@ var DomHotkey = /** @class */ (function () {
         };
     };
     DomHotkey.prototype.updateKeyState = function (evt) {
-        var hotkeys = hotkeyStrings_1.createHotkeyStrings(evt);
+        var hotkeys = (0, hotkeyStrings_1.createHotkeyStrings)(evt);
         if (this.keyState.hotkeys && this.keyState.hotkeys[0] === hotkeys[0]) {
             var elapsedTime = evt.timeStamp - this.keyState.timeStamp;
             if (elapsedTime <= this.keyRepeat)
@@ -64,9 +66,9 @@ var DomHotkey = /** @class */ (function () {
     DomHotkey.prototype.fireDeterminedAction = function (hotkeys) {
         var _a = this, root = _a.root, attr = _a.attribute;
         return hotkeys.some(function (hotkey) {
-            var elem = dom_1.getElementByHotkeyString(root, attr, hotkey);
+            var elem = (0, dom_1.getElementByHotkeyString)(root, attr, hotkey);
             if (elem) {
-                if (dom_1.isFormField(elem)) {
+                if ((0, dom_1.isFormField)(elem)) {
                     elem.focus();
                 }
                 else {
@@ -78,7 +80,10 @@ var DomHotkey = /** @class */ (function () {
         });
     };
     DomHotkey.prototype.fire = function (evt) {
-        if (dom_1.isFormField(evt.target)) {
+        if (evt.defaultPrevented) {
+            return false;
+        }
+        if ((0, dom_1.isFormField)(evt.target)) {
             this.reset();
             return false;
         }
@@ -87,6 +92,9 @@ var DomHotkey = /** @class */ (function () {
         }
         var hotkeys = this.keyState.hotkeys; // eslint-disable-line @typescript-eslint/no-non-null-assertion
         var fired = this.fireDeterminedAction(hotkeys);
+        if (fired) {
+            evt.preventDefault();
+        }
         if (process.env.NODE_ENV === 'development' && !fired) {
             console.warn("No elements found matching \"" + hotkeys.join('" or "') + "\".");
             var _a = this, root = _a.root, attr_1 = _a.attribute;
@@ -195,7 +203,7 @@ var DomHotkey = /** @class */ (function () {
                     .map(function (_a) {
                     var _b;
                     var state = _a.state;
-                    return hotkeyStrings_1.createHotkeyStringsFromState(__assign(__assign({}, state), (state.modKey
+                    return (0, hotkeyStrings_1.createHotkeyStringsFromState)(__assign(__assign({}, state), (state.modKey
                         ? (_b = {},
                             _b[hotkeyStrings_1.metaModifierKey ? 'metaKey' : 'ctrlKey'] = true,
                             _b) : {}))).reverse()[state.modKey ? 1 : 0];
@@ -205,9 +213,9 @@ var DomHotkey = /** @class */ (function () {
                     lines.push("  - Did you mean '[" + attr_1 + "=\"" + recommendedHotkeys + "\"]'?");
                 return lines.join('\n');
             });
-            console.error(__spreadArrays([
+            console.error(__spreadArray([
                 "Found " + errorMessages.length + " elements with the wrong " + attr_1 + " attribute:"
-            ], errorMessages).join('\n'));
+            ], errorMessages, true).join('\n'));
         }
         return fired;
     };
