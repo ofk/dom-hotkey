@@ -81,6 +81,10 @@ export class DomHotkey {
   }
 
   fire(evt: KeyboardEvent): boolean {
+    if (evt.defaultPrevented) {
+      return false;
+    }
+
     if (isFormField(evt.target)) {
       this.reset();
       return false;
@@ -92,6 +96,9 @@ export class DomHotkey {
 
     const hotkeys = this.keyState.hotkeys!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
     const fired = this.fireDeterminedAction(hotkeys);
+    if (fired) {
+      evt.preventDefault();
+    }
 
     if (process.env.NODE_ENV === 'development' && !fired) {
       console.warn(`No elements found matching "${hotkeys.join('" or "')}".`);
