@@ -2,7 +2,7 @@
 
 import { setup } from './DomHotkey';
 
-require('css.escape'); // eslint-disable-line import/no-extraneous-dependencies
+require('css.escape');
 
 const wait = (ms: number): Promise<void> =>
   new Promise((resolve) => {

@@ -1,6 +1,6 @@
 import { getElementByHotkeyString, isFormField } from './dom';
 
-require('css.escape'); // eslint-disable-line import/no-extraneous-dependencies
+require('css.escape');
 
 describe('isFormField', () => {
   it('returns false when give document', () => {

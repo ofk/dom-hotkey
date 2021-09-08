@@ -42,9 +42,9 @@ describe('createHotkeyStrings', () => {
   });
 
   it('returns the result of pressing 1', () => {
-    expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: '1', code: 'Digit1' }))
-    ).toEqual(['1']);
+    expect(createHotkeyStrings(new KeyboardEvent('keydown', { key: '1', code: 'Digit1' }))).toEqual(
+      ['1']
+    );
   });
 
   it('returns the result of pressing Shift+1', () => {

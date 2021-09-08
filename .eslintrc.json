@@ -4,5 +4,8 @@
     "browser": true,
     "es6": true
   },
-  "extends": ["@ofk/eslint-config-recommend", "plugin:jest/recommended"]
+  "extends": ["@ofk/eslint-config-recommend", "plugin:jest/recommended"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
 }
