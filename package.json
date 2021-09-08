@@ -27,6 +27,7 @@
     "lint:package-json": "prettier-package-json -l",
     "lint:scripts": "eslint --ext .js,.jsx,.ts,.tsx src",
     "lint:typecheck": "tsc --noEmit",
+    "prepare": "husky install",
     "test": "jest",
     "prettier:format": "npm run prettier:lint -- --write",
     "prettier:lint": "prettier . --check"
