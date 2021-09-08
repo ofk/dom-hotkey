@@ -28,6 +28,6 @@ function createHotkeyStringsFromState(state) {
 }
 exports.createHotkeyStringsFromState = createHotkeyStringsFromState;
 function createHotkeyStrings(evt) {
-    return createHotkeyStringsFromState(hotkeyState_1.createHotkeyState(evt));
+    return createHotkeyStringsFromState((0, hotkeyState_1.createHotkeyState)(evt));
 }
 exports.createHotkeyStrings = createHotkeyStrings;
