@@ -1,6 +1,6 @@
 import { getElementByHotkeyString, isFormField } from './dom';
+import type { HotkeyStrings } from './hotkeyStrings';
 import {
-  HotkeyStrings,
   createHotkeyStrings,
   createHotkeyStringsFromState,
   metaModifierKey,

@@ -1,4 +1,5 @@
-import { HotkeyState, createHotkeyState } from './hotkeyState';
+import type { HotkeyState } from './hotkeyState';
+import { createHotkeyState } from './hotkeyState';
 
 export type HotkeyStrings = [string, ...string[]];
 
