@@ -1,14 +1,147 @@
 import { DOMHotkey } from './DOMHotkey';
+import { createHotkeyStringsFromState, metaModifierKey } from './hotkeyStrings';
 
 export function setup(
   options: NonNullable<ConstructorParameters<typeof DOMHotkey>[0]> = {}
 ): () => void {
   const domHotkey = new DOMHotkey(options);
+  const reportedAttributes: Record<string, true> = {};
   const keydownHandler = (evt: KeyboardEvent): void => {
-    domHotkey.fire(evt);
+    const result = domHotkey.keydown(evt);
+    if (
+      !result && // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      (!window.process || process.env.NODE_ENV === 'development')
+    ) {
+      console.warn(
+        `No elements found matching hotkeys: ${domHotkey.keys
+          .map((key) => createHotkeyStringsFromState(key.state)[0])
+          .join(' ')}`
+      );
+      const elems = Array.from(
+        domHotkey.root.querySelectorAll<HTMLElement>(`[${domHotkey.attribute}]`)
+      ).filter((elem) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const attr = elem.getAttribute(domHotkey.attribute)!;
+        /* istanbul ignore next */
+        if (reportedAttributes[attr]) return false;
+        reportedAttributes[attr] = true;
+        return true;
+      });
+      if (elems.length) {
+        const errorMessages = elems
+          .map((elem) => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const hotkey = elem.getAttribute(domHotkey.attribute)!;
+            const results = hotkey.split(/(?<=\S),(?=\S)/).map((rawKeysString) => {
+              const error = {
+                unnecessarySpaces: false,
+                unknownModifierKeys: false,
+                invalidOrder: false,
+                invalidKey: false,
+              };
+              const keysString = rawKeysString.trim().replace(/\s+/g, ' ');
+              if (keysString !== rawKeysString) {
+                error.unnecessarySpaces = true;
+              }
+              const keyStrings = keysString.match(
+                /(?:(?:c\w*?tr|meta|sup|win|mod|co?m\w*?d|alt|op|shift)\w*\s*\+\s*)*(?:\w+|\S)/gi
+              );
+              const state = {
+                modKey: false,
+                ctrlKey: false,
+                metaKey: false,
+                shiftKey: false,
+                keys: [] as string[],
+              };
+              keyStrings?.forEach((keyString) => {
+                let orderCount = 0;
+                keyString.split(/(?<=.)\+/).forEach((rawKey) => {
+                  const key = rawKey.replace(/\s+/g, '');
+                  error.unnecessarySpaces = error.unnecessarySpaces || rawKey !== key;
+                  if (/^c.*?tr/i.test(key)) {
+                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Control';
+                    error.invalidOrder = error.invalidOrder || orderCount >= 1;
+                    orderCount = 1;
+                    state.ctrlKey = true;
+                  } else if (/^(?:meta|sup|win)/i.test(key)) {
+                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Meta';
+                    error.invalidOrder = error.invalidOrder || orderCount >= 2;
+                    orderCount = 2;
+                    state.metaKey = true;
+                  } else if (/^(?:mod|co?m.*?d)/i.test(key)) {
+                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Modifier';
+                    error.invalidOrder = error.invalidOrder || orderCount !== 0;
+                    orderCount = 3;
+                    state.modKey = true;
+                  } else if (/^shift/i.test(key)) {
+                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Shift';
+                    error.invalidOrder = error.invalidOrder || orderCount >= 4;
+                    orderCount = 4;
+                    state.shiftKey = true;
+                  } else {
+                    const validKey =
+                      key.length === 1
+                        ? key.toLowerCase()
+                        : key.charAt(0).toUpperCase() + key.slice(1);
+                    error.invalidKey = error.invalidKey || key !== validKey;
+                    orderCount = 9;
+                    if (/^[A-Z]$/.test(key)) state.shiftKey = true;
+                    state.keys.push(validKey);
+                  }
+                });
+              });
+              return { hotkey: rawKeysString, state, error };
+            });
+            return { hotkey, results };
+          })
+          .filter(({ results }) => results.some(({ error }) => Object.values(error).some((v) => v)))
+          .map(({ hotkey: originalHotkey, results }) => {
+            const lines = [`- '[${domHotkey.attribute}="${originalHotkey}"]':`];
+            results.forEach(({ hotkey, error }) => {
+              if (!Object.values(error).some((v) => v)) return;
+              const line = [`  - "${hotkey}":`];
+              if (error.invalidKey) line.push('Wrong hotkey.');
+              if (error.invalidOrder) line.push('Bad order.');
+              if (error.unknownModifierKeys) line.push('Includes unknown modifier keys.');
+              if (error.unnecessarySpaces) line.push('There are unnecessary spaces.');
+              lines.push(line.join(' '));
+            });
+            const recommendedHotkey = results
+              .map(({ state }) =>
+                state.keys
+                  .map(
+                    (key) =>
+                      createHotkeyStringsFromState({
+                        key,
+                        ...state,
+                        ...(state.modKey
+                          ? {
+                              [metaModifierKey ? 'metaKey' : 'ctrlKey']: true,
+                            }
+                          : {}),
+                      }).reverse()[state.modKey ? 1 : 0]
+                  )
+                  .join(' ')
+              )
+              .join(',');
+            if (originalHotkey !== recommendedHotkey)
+              lines.push(`  - Did you mean '[${domHotkey.attribute}="${recommendedHotkey}"]'?`);
+            return lines.join('\n');
+          });
+
+        if (errorMessages.length) {
+          console.error(
+            [
+              `Found ${errorMessages.length} elements with the wrong ${domHotkey.attribute} attribute:`,
+              ...errorMessages,
+            ].join('\n')
+          );
+        }
+      }
+    }
   };
-  const keyupHandler = (): void => {
-    domHotkey.reset();
+  const keyupHandler = (evt: KeyboardEvent): void => {
+    domHotkey.keyup(evt);
   };
 
   const doc = domHotkey.root.ownerDocument || domHotkey.root;

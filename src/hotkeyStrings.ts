@@ -1,5 +1,4 @@
 import type { HotkeyState } from './hotkeyState';
-import { createHotkeyState } from './hotkeyState';
 
 export type HotkeyStrings = [string, ...string[]];
 
@@ -29,8 +28,4 @@ export function createHotkeyStringsFromState(state: HotkeyState): HotkeyStrings 
     : isModkey(state)
     ? [`Modifier${partialHotkey}`, hotkey]
     : [hotkey];
-}
-
-export function createHotkeyStrings(evt: Parameters<typeof createHotkeyState>[0]): HotkeyStrings {
-  return createHotkeyStringsFromState(createHotkeyState(evt));
 }

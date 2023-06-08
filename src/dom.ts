@@ -9,12 +9,21 @@ export function isFormField(elem: unknown): boolean {
     name === 'SELECT' ||
     name === 'TEXTAREA' ||
     (name === 'INPUT' &&
-      type !== 'submit' &&
-      type !== 'reset' &&
+      type !== 'button' &&
       type !== 'checkbox' &&
-      type !== 'radio') ||
+      type !== 'radio' &&
+      type !== 'reset' &&
+      type !== 'submit') ||
     elem.isContentEditable
   );
+}
+
+export function fireDeterminedAction(elem: HTMLElement): void {
+  if (isFormField(elem)) {
+    elem.focus();
+  } else {
+    elem.click();
+  }
 }
 
 export function getElementByHotkeyString(
