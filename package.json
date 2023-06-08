@@ -1,7 +1,7 @@
 {
   "name": "dom-hotkey",
   "version": "1.1.0",
-  "description": "",
+  "description": "dom-hotkey is hotkey library that works with the html attribute definition.",
   "license": "MIT",
   "author": "ofk <ofkjpn+npm@gmail.com> (https://github.com/ofk/)",
   "repository": "ofk/dom-hotkey",
