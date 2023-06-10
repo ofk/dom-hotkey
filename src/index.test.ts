@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { setup } from './setup';
+import { setup } from '.';
 
 require('css.escape');
 
