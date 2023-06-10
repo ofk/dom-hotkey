@@ -28,20 +28,24 @@ export function setup(
         return true;
       });
       if (elems.length) {
+        const kErrorUnnecessarySpaces = 0;
+        const kErrorUnknownModifierKeys = 1;
+        const kErrorInvalidOrder = 2;
+        const kErrorInvalidKey = 3;
         const errorMessages = elems
           .map((elem) => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const hotkey = elem.getAttribute(domHotkey.attribute)!;
             const results = hotkey.split(/(?<=\S),(?=\S)/).map((rawKeysString) => {
-              const error = {
-                unnecessarySpaces: false,
-                unknownModifierKeys: false,
-                invalidOrder: false,
-                invalidKey: false,
-              };
+              const error = [false, false, false, false] as [
+                unnecessarySpaces: boolean,
+                unknownModifierKeys: boolean,
+                invalidOrder: boolean,
+                invalidKey: boolean
+              ];
               const keysString = rawKeysString.trim().replace(/\s+/g, ' ');
               if (keysString !== rawKeysString) {
-                error.unnecessarySpaces = true;
+                error[kErrorUnnecessarySpaces] = true;
               }
               const keyStrings = keysString.match(
                 /(?:(?:c\w*?tr|meta|sup|win|mod|co?m\w*?d|alt|op|shift)\w*\s*\+\s*)*(?:\w+|\S)/gi
@@ -57,25 +61,29 @@ export function setup(
                 let orderCount = 0;
                 keyString.split(/(?<=.)\+/).forEach((rawKey) => {
                   const key = rawKey.replace(/\s+/g, '');
-                  error.unnecessarySpaces = error.unnecessarySpaces || rawKey !== key;
+                  error[kErrorUnnecessarySpaces] = error[kErrorUnnecessarySpaces] || rawKey !== key;
                   if (/^c.*?tr/i.test(key)) {
-                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Control';
-                    error.invalidOrder = error.invalidOrder || orderCount >= 1;
+                    error[kErrorUnknownModifierKeys] =
+                      error[kErrorUnknownModifierKeys] || key !== 'Control';
+                    error[kErrorInvalidOrder] = error[kErrorInvalidOrder] || orderCount >= 1;
                     orderCount = 1;
                     state.ctrlKey = true;
                   } else if (/^(?:meta|sup|win)/i.test(key)) {
-                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Meta';
-                    error.invalidOrder = error.invalidOrder || orderCount >= 2;
+                    error[kErrorUnknownModifierKeys] =
+                      error[kErrorUnknownModifierKeys] || key !== 'Meta';
+                    error[kErrorInvalidOrder] = error[kErrorInvalidOrder] || orderCount >= 2;
                     orderCount = 2;
                     state.metaKey = true;
                   } else if (/^(?:mod|co?m.*?d)/i.test(key)) {
-                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Modifier';
-                    error.invalidOrder = error.invalidOrder || orderCount !== 0;
+                    error[kErrorUnknownModifierKeys] =
+                      error[kErrorUnknownModifierKeys] || key !== 'Modifier';
+                    error[kErrorInvalidOrder] = error[kErrorInvalidOrder] || orderCount !== 0;
                     orderCount = 3;
                     state.modKey = true;
                   } else if (/^shift/i.test(key)) {
-                    error.unknownModifierKeys = error.unknownModifierKeys || key !== 'Shift';
-                    error.invalidOrder = error.invalidOrder || orderCount >= 4;
+                    error[kErrorUnknownModifierKeys] =
+                      error[kErrorUnknownModifierKeys] || key !== 'Shift';
+                    error[kErrorInvalidOrder] = error[kErrorInvalidOrder] || orderCount >= 4;
                     orderCount = 4;
                     state.shiftKey = true;
                   } else {
@@ -83,7 +91,7 @@ export function setup(
                       key.length === 1
                         ? key.toLowerCase()
                         : key.charAt(0).toUpperCase() + key.slice(1);
-                    error.invalidKey = error.invalidKey || key !== validKey;
+                    error[kErrorInvalidKey] = error[kErrorInvalidKey] || key !== validKey;
                     orderCount = 9;
                     if (/^[A-Z]$/.test(key)) state.shiftKey = true;
                     state.keys.push(validKey);
@@ -100,10 +108,10 @@ export function setup(
             results.forEach(({ hotkey, error }) => {
               if (!Object.values(error).some((v) => v)) return;
               const line = [`  - "${hotkey}":`];
-              if (error.invalidKey) line.push('Wrong hotkey.');
-              if (error.invalidOrder) line.push('Bad order.');
-              if (error.unknownModifierKeys) line.push('Includes unknown modifier keys.');
-              if (error.unnecessarySpaces) line.push('There are unnecessary spaces.');
+              if (error[kErrorInvalidKey]) line.push('Wrong hotkey.');
+              if (error[kErrorInvalidOrder]) line.push('Bad order.');
+              if (error[kErrorUnknownModifierKeys]) line.push('Includes unknown modifier keys.');
+              if (error[kErrorUnnecessarySpaces]) line.push('There are unnecessary spaces.');
               lines.push(line.join(' '));
             });
             const recommendedHotkey = results
