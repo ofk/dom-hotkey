@@ -1,9 +1,10 @@
 // HotkeyState's shiftKey is differnt from KeyboardEvent.
 //
-// | typing      | KeyboardEvent                | HotkeyState                   |
-// | ----------- | ---------------------------- | ----------------------------- |
-// | A (Shift+a) | { shiftKey: true, key: 'A' } | { shiftKey: true, key: 'a' }  |
-// | ! (Shift+1) | { shiftKey: true, key: '!' } | { shiftKey: false, key: '!' } |
+// | typing      | KeyboardEvent                    | HotkeyState                             |
+// | ----------- | -------------------------------- | --------------------------------------- |
+// | A (Shift+a) | { shiftKey: true, key: 'A' }     | { shiftKey: true, key: 'a' }            |
+// | ! (Shift+1) | { shiftKey: true, key: '!' }     | { shiftKey: false, key: '!' }           |
+// | Shift       | { shiftKey: true, key: 'Shift' } | { shiftKey: true, key: 'Unidentified' } |
 
 export interface HotkeyState {
   ctrlKey: boolean;
@@ -20,16 +21,23 @@ export function createHotkeyState({
   shiftKey,
   key,
 }: Pick<KeyboardEvent, 'ctrlKey' | 'metaKey' | 'shiftKey' | 'key'>): HotkeyState {
-  const fixedShiftKey = shiftKey && (key.length > 1 || key.toLowerCase() !== key.toUpperCase());
+  // eslint-disable-next-line no-nested-ternary
+  const fixedKey = regModifierKeys.test(key) ? 'Unidentified' : key === ' ' ? 'Space' : key;
+  const fixedShiftKey =
+    shiftKey && (fixedKey.length > 1 || fixedKey.toLowerCase() !== fixedKey.toUpperCase());
   return {
     ctrlKey,
     metaKey,
     shiftKey: fixedShiftKey,
-    // eslint-disable-next-line no-nested-ternary
-    key: regModifierKeys.test(key)
-      ? 'Unidentified'
-      : fixedShiftKey && key.length === 1
-      ? key.toLowerCase()
-      : key,
+    key: fixedShiftKey && fixedKey.length === 1 ? fixedKey.toLowerCase() : fixedKey,
   };
+}
+
+export function equalHotkeyState(a: HotkeyState, b: HotkeyState): boolean {
+  return (
+    a.ctrlKey === b.ctrlKey &&
+    a.metaKey === b.metaKey &&
+    a.shiftKey === b.shiftKey &&
+    a.key === b.key
+  );
 }

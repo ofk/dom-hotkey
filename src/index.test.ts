@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { setup } from './DomHotkey';
+import { setup } from '.';
 
 require('css.escape');
 
@@ -86,7 +86,31 @@ describe('setup', () => {
     expect(count).toEqual(3);
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
     document.dispatchEvent(new KeyboardEvent('keyup', { key: 'c' }));
-    expect(count).toEqual(4);
+    expect(count).toEqual(3);
+    remover();
+  });
+
+  it('tests sequence of keys', async () => {
+    let count = 0;
+    document.body.innerHTML = '<button data-hotkey="g c">g c</button>';
+    document.querySelector('button')!.addEventListener('click', () => {
+      count += 1;
+    });
+    const remover = setup({ resetKey: 100 });
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'g' }));
+    expect(count).toEqual(0);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    expect(count).toEqual(1);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    expect(count).toEqual(1);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'g' }));
+    expect(count).toEqual(1);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    expect(count).toEqual(2);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'g' }));
+    await wait(150);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    expect(count).toEqual(2);
     remover();
   });
 
@@ -112,28 +136,62 @@ describe('setup', () => {
     remover();
   });
 
+  it('renderes no error message if all hotkey are valid', async () => {
+    const oldNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+    const spyWarn = jest.spyOn(console, 'warn').mockImplementation((x) => x);
+    const spyError = jest.spyOn(console, 'error').mockImplementation((x) => x);
+
+    document.body.innerHTML = `
+      <a data-hotkey="x" />
+      <a data-hotkey="Modifier+x" />
+      <a data-hotkey="Control+Meta+Shift+x" />
+      <a data-hotkey="x y,z" />
+      <a data-hotkey="x,," />
+      <a data-hotkey="x ," />
+      <a data-hotkey=",,z" />
+      <a data-hotkey=", z" />
+    `;
+    const remover = setup();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true }));
+    expect(spyWarn.mock.calls[0]![0]).toEqual('No elements found matching hotkeys: Modifier+a');
+    expect(spyError.mock.calls[0]).toBeUndefined();
+    remover();
+
+    spyWarn.mockRestore();
+    process.env.NODE_ENV = oldNodeEnv;
+  });
+
   it('renderes error message if presses undefined hotkey', async () => {
     const oldNodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
     const spyWarn = jest.spyOn(console, 'warn').mockImplementation((x) => x);
     const spyError = jest.spyOn(console, 'error').mockImplementation((x) => x);
 
-    document.body.innerHTML =
-      '<a data-hotkey="x" /><a data-hotkey="  " /><a data-hotkey="Meta,Alt" /><a data-hotkey="Mod+ A,Shift+Control+z" /><a data-hotkey="?,f1" />';
+    document.body.innerHTML = `
+      <a data-hotkey=" X " />
+      <a data-hotkey="mod + x" />
+      <a data-hotkey="Shift+Control+x" />
+      <a data-hotkey="x   y" />
+      <a data-hotkey="?,f1" />
+    `;
     const remover = setup();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true }));
-    expect(spyWarn.mock.calls[0]![0]).toEqual(
-      'No elements found matching "Modifier+a" or "Control+a".'
-    );
+    expect(spyWarn.mock.calls[0]![0]).toEqual('No elements found matching hotkeys: Modifier+a');
     expect(spyError.mock.calls[0]![0])
-      .toEqual(`Found 3 elements with the wrong data-hotkey attribute:
-- '[data-hotkey="  "]':
-  - "  ": There are unnecessary spaces.
-  - Did you mean '[data-hotkey=" "]'?
-- '[data-hotkey="Mod+ A,Shift+Control+z"]':
-  - "Mod+ A": Wrong hotkey. Includes unknown modifier keys. There are unnecessary spaces.
-  - "Shift+Control+z": Bad order.
-  - Did you mean '[data-hotkey="Modifier+Shift+a,Control+Shift+z"]'?
+      .toEqual(`Found 5 elements with the wrong data-hotkey attribute:
+- '[data-hotkey=" X "]':
+  - " X ": Wrong hotkey. There are unnecessary spaces.
+  - Did you mean '[data-hotkey="Shift+x"]'?
+- '[data-hotkey="mod + x"]':
+  - "mod + x": Includes unknown modifier keys. There are unnecessary spaces.
+  - Did you mean '[data-hotkey="Modifier+x"]'?
+- '[data-hotkey="Shift+Control+x"]':
+  - "Shift+Control+x": Bad order.
+  - Did you mean '[data-hotkey="Control+Shift+x"]'?
+- '[data-hotkey="x   y"]':
+  - "x   y": There are unnecessary spaces.
+  - Did you mean '[data-hotkey="x y"]'?
 - '[data-hotkey="?,f1"]':
   - "f1": Wrong hotkey.
   - Did you mean '[data-hotkey="?,F1"]'?`);
