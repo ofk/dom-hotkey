@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { setup } from './DomHotkey';
+import { setup } from './setup';
 
 require('css.escape');
 
