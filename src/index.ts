@@ -54,6 +54,7 @@ export function setup(
                 modKey: false,
                 ctrlKey: false,
                 metaKey: false,
+                altKey: false,
                 shiftKey: false,
                 keys: [] as string[],
               };
@@ -121,10 +122,12 @@ export function setup(
                     (key) =>
                       createHotkeyStrings({
                         key,
+                        code: key,
                         ...state,
                         ...(state.modKey
                           ? {
                               [metaModifierKey ? 'metaKey' : 'ctrlKey']: true,
+                              [metaModifierKey ? 'ctrlKey' : 'metaKey']: false,
                             }
                           : {}),
                       }).reverse()[state.modKey ? 1 : 0]

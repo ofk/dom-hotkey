@@ -1,6 +1,6 @@
 import { fireDeterminedAction, getElementByHotkeyString, isFormField } from './dom';
 import type { HotkeyState } from './hotkeyState';
-import { copyAsHotkeyState, equalHotkeyState } from './hotkeyState';
+import { copyAsHotkeyState, equalHotkeyState, isModifierKeyPressed } from './hotkeyState';
 import { createHotkeyStrings } from './hotkeyStrings';
 
 export class DOMHotkey {
@@ -41,15 +41,13 @@ export class DOMHotkey {
 
   updateKeys(evt: KeyboardEvent): boolean {
     const state = copyAsHotkeyState(evt);
-    if (state.ctrlKey || state.metaKey || state.shiftKey) {
+    if (isModifierKeyPressed(state)) {
       this.reset();
     } else {
       const keyStateForReset = this.keys[this.keys.length - 1];
       if (
         keyStateForReset &&
-        (keyStateForReset.state.ctrlKey ||
-          keyStateForReset.state.metaKey ||
-          keyStateForReset.state.shiftKey ||
+        (isModifierKeyPressed(keyStateForReset.state) ||
           evt.timeStamp - keyStateForReset.timeStamp > this.resetKey)
       ) {
         this.reset();

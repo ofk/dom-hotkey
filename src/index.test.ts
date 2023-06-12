@@ -21,15 +21,15 @@ describe('setup', () => {
     const remover = setup({ keyRepeat: -1, initialKeyRepeat: -1 });
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
     expect(count).toEqual(1);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }));
+    expect(count).toEqual(1);
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
     expect(count).toEqual(2);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
-    expect(count).toEqual(3);
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', ctrlKey: true }));
-    expect(count).toEqual(3);
+    expect(count).toEqual(2);
     remover();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
-    expect(count).toEqual(3);
+    expect(count).toEqual(2);
   });
 
   it('tests focus event', () => {
@@ -92,24 +92,24 @@ describe('setup', () => {
 
   it('tests sequence of keys', async () => {
     let count = 0;
-    document.body.innerHTML = '<button data-hotkey="g c">g c</button>';
+    document.body.innerHTML = '<button data-hotkey="s q">s q</button>';
     document.querySelector('button')!.addEventListener('click', () => {
       count += 1;
     });
     const remover = setup({ resetKey: 100 });
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'g' }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 's' }));
     expect(count).toEqual(0);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
     expect(count).toEqual(1);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
     expect(count).toEqual(1);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'g' }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 's' }));
     expect(count).toEqual(1);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
     expect(count).toEqual(2);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'g' }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
     await wait(150);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'c' }));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
     expect(count).toEqual(2);
     remover();
   });
