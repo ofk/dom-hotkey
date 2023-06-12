@@ -1,11 +1,4 @@
-import { createHotkeyState } from './hotkeyState';
-import { createHotkeyStringsFromState, metaModifierKey } from './hotkeyStrings';
-
-function createHotkeyStrings(
-  evt: Parameters<typeof createHotkeyState>[0]
-): ReturnType<typeof createHotkeyStringsFromState> {
-  return createHotkeyStringsFromState(createHotkeyState(evt));
-}
+import { createHotkeyStrings, metaModifierKey } from './hotkeyStrings';
 
 describe('metaModifierKey', () => {
   it('returns bool value', () => {

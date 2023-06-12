@@ -1,5 +1,5 @@
 import { DOMHotkey } from './DOMHotkey';
-import { createHotkeyStringsFromState, metaModifierKey } from './hotkeyStrings';
+import { createHotkeyStrings, metaModifierKey } from './hotkeyStrings';
 
 export function setup(
   options: NonNullable<ConstructorParameters<typeof DOMHotkey>[0]> = {}
@@ -14,7 +14,7 @@ export function setup(
     ) {
       console.warn(
         `No elements found matching hotkeys: ${domHotkey.keys
-          .map((key) => createHotkeyStringsFromState(key.state)[0])
+          .map((key) => createHotkeyStrings(key.state)[0])
           .join(' ')}`
       );
       const elems = Array.from(
@@ -119,7 +119,7 @@ export function setup(
                 state.keys
                   .map(
                     (key) =>
-                      createHotkeyStringsFromState({
+                      createHotkeyStrings({
                         key,
                         ...state,
                         ...(state.modKey

@@ -18,7 +18,24 @@ function toShiftKeyStringFromState({ shiftKey, key }: HotkeyState): string {
   return `${shiftKey ? '+Shift' : ''}${key !== 'Unidentified' ? `+${key}` : ''}`;
 }
 
-export function createHotkeyStringsFromState(state: HotkeyState): HotkeyStrings {
+const regModifierKeys = /^(?:Control|Meta|Alt|Shift)$/;
+
+export function createHotkeyStrings({
+  ctrlKey,
+  metaKey,
+  shiftKey,
+  key,
+}: HotkeyState): HotkeyStrings {
+  // eslint-disable-next-line no-nested-ternary
+  const fixedKey = regModifierKeys.test(key) ? 'Unidentified' : key === ' ' ? 'Space' : key;
+  const fixedShiftKey =
+    shiftKey && (fixedKey.length > 1 || fixedKey.toLowerCase() !== fixedKey.toUpperCase());
+  const state = {
+    ctrlKey,
+    metaKey,
+    shiftKey: fixedShiftKey,
+    key: fixedShiftKey && fixedKey.length === 1 ? fixedKey.toLowerCase() : fixedKey,
+  };
   const partialHotkey = toShiftKeyStringFromState(state);
   const hotkey = `${toCtrlMetaStringFromState(state)}${partialHotkey}`.slice(1);
   // eslint-disable-next-line no-nested-ternary
