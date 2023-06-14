@@ -1,7 +1,7 @@
 import { fireDeterminedAction, getElementByHotkeyString, isFormField } from './dom';
 import type { HotkeyState } from './hotkeyState';
-import { createHotkeyState, equalHotkeyState } from './hotkeyState';
-import { createHotkeyStringsFromState } from './hotkeyStrings';
+import { copyAsHotkeyState, equalHotkeyState, isModifierKeyPressed } from './hotkeyState';
+import { createHotkeyStrings } from './hotkeyStrings';
 
 export class DOMHotkey {
   root: HTMLElement | Document;
@@ -40,16 +40,14 @@ export class DOMHotkey {
   }
 
   updateKeys(evt: KeyboardEvent): boolean {
-    const state = createHotkeyState(evt);
-    if (state.ctrlKey || state.metaKey || state.shiftKey) {
+    const state = copyAsHotkeyState(evt);
+    if (isModifierKeyPressed(state)) {
       this.reset();
     } else {
       const keyStateForReset = this.keys[this.keys.length - 1];
       if (
         keyStateForReset &&
-        (keyStateForReset.state.ctrlKey ||
-          keyStateForReset.state.metaKey ||
-          keyStateForReset.state.shiftKey ||
+        (isModifierKeyPressed(keyStateForReset.state) ||
           evt.timeStamp - keyStateForReset.timeStamp > this.resetKey)
       ) {
         this.reset();
@@ -76,7 +74,7 @@ export class DOMHotkey {
     return [...this.keys]
       .reverse()
       .reduce((hotkeys, key) => {
-        const hotkeyStrings = createHotkeyStringsFromState(key.state);
+        const hotkeyStrings = createHotkeyStrings(key.state);
         return hotkeys[0] ? [`${hotkeyStrings[0]} ${hotkeys[0]}`, ...hotkeys] : hotkeyStrings;
       }, [] as string[])
       .some((hotkey) => {
@@ -90,7 +88,7 @@ export class DOMHotkey {
   }
 
   keyup(evt: KeyboardEvent): void {
-    const state = createHotkeyState(evt);
+    const state = copyAsHotkeyState(evt);
     const key = this.keys[this.keys.length - 1];
     if (key && equalHotkeyState(key.state, state)) {
       key.pressed = true;

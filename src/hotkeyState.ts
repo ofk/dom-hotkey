@@ -1,43 +1,30 @@
-// HotkeyState's shiftKey is differnt from KeyboardEvent.
-//
-// | typing      | KeyboardEvent                    | HotkeyState                             |
-// | ----------- | -------------------------------- | --------------------------------------- |
-// | A (Shift+a) | { shiftKey: true, key: 'A' }     | { shiftKey: true, key: 'a' }            |
-// | ! (Shift+1) | { shiftKey: true, key: '!' }     | { shiftKey: false, key: '!' }           |
-// | Shift       | { shiftKey: true, key: 'Shift' } | { shiftKey: true, key: 'Unidentified' } |
+export interface HotkeyState
+  extends Pick<KeyboardEvent, 'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey' | 'key' | 'code'> {}
 
-export interface HotkeyState {
-  ctrlKey: boolean;
-  metaKey: boolean;
-  shiftKey: boolean;
-  key: string;
-}
-
-const regModifierKeys = /^(?:Control|Meta|Alt|Shift)$/;
-
-export function createHotkeyState({
+export function copyAsHotkeyState({
   ctrlKey,
   metaKey,
+  altKey,
   shiftKey,
   key,
-}: Pick<KeyboardEvent, 'ctrlKey' | 'metaKey' | 'shiftKey' | 'key'>): HotkeyState {
-  // eslint-disable-next-line no-nested-ternary
-  const fixedKey = regModifierKeys.test(key) ? 'Unidentified' : key === ' ' ? 'Space' : key;
-  const fixedShiftKey =
-    shiftKey && (fixedKey.length > 1 || fixedKey.toLowerCase() !== fixedKey.toUpperCase());
-  return {
-    ctrlKey,
-    metaKey,
-    shiftKey: fixedShiftKey,
-    key: fixedShiftKey && fixedKey.length === 1 ? fixedKey.toLowerCase() : fixedKey,
-  };
+  code,
+}: HotkeyState): HotkeyState {
+  return { ctrlKey, metaKey, altKey, shiftKey, key, code };
 }
 
-export function equalHotkeyState(a: HotkeyState, b: HotkeyState): boolean {
+export function equalHotkeyState(
+  a: Omit<HotkeyState, 'code'>,
+  b: Omit<HotkeyState, 'code'>
+): boolean {
   return (
     a.ctrlKey === b.ctrlKey &&
     a.metaKey === b.metaKey &&
+    a.altKey === b.altKey &&
     a.shiftKey === b.shiftKey &&
     a.key === b.key
   );
+}
+
+export function isModifierKeyPressed(state: Omit<HotkeyState, 'key' | 'code'>): boolean {
+  return state.ctrlKey || state.metaKey || state.altKey || state.shiftKey;
 }
