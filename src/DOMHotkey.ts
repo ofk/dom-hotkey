@@ -73,10 +73,10 @@ export class DOMHotkey {
   fire(): boolean {
     return [...this.keys]
       .reverse()
-      .reduce((hotkeys, key) => {
+      .reduce<string[]>((hotkeys, key) => {
         const hotkeyStrings = createHotkeyStrings(key.state);
         return hotkeys[0] ? [`${hotkeyStrings[0]} ${hotkeys[0]}`, ...hotkeys] : hotkeyStrings;
-      }, [] as string[])
+      }, [])
       .some((hotkey) => {
         const elem = getElementByHotkeyString(this.root, this.attribute, hotkey);
         if (elem) {

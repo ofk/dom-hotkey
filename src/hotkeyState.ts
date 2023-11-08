@@ -14,7 +14,7 @@ export function copyAsHotkeyState({
 
 export function equalHotkeyState(
   a: Omit<HotkeyState, 'code'>,
-  b: Omit<HotkeyState, 'code'>
+  b: Omit<HotkeyState, 'code'>,
 ): boolean {
   return (
     a.ctrlKey === b.ctrlKey &&

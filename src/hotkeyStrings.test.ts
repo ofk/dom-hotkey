@@ -46,7 +46,7 @@ const itReturnsTheResultOfPressingAltShift = (result: string, key = result): voi
 
   it(`returns the result of pressing Control+Shift+${result}`, () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key, ctrlKey: true, shiftKey: true }))
+      createHotkeyStrings(new KeyboardEvent('keydown', { key, ctrlKey: true, shiftKey: true })),
     ).toEqual([`Modifier+Shift+${result}`, `Control+Shift+${result}`]);
   });
 
@@ -59,8 +59,8 @@ const itReturnsTheResultOfPressingAltShift = (result: string, key = result): voi
           metaKey: true,
           altKey: true,
           shiftKey: true,
-        })
-      )
+        }),
+      ),
     ).toEqual([`Control+Meta+Alt+Shift+${result}`]);
   });
 };
@@ -70,7 +70,7 @@ describe('createHotkeyStrings', () => {
 
   it('returns the result of pressing Shift+a', () => {
     expect(createHotkeyStrings(new KeyboardEvent('keydown', { key: 'A', shiftKey: true }))).toEqual(
-      ['Shift+a', 'A']
+      ['Shift+a', 'A'],
     );
   });
 
@@ -82,13 +82,15 @@ describe('createHotkeyStrings', () => {
 
   it('returns the result of pressing Alt+a for Mac', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'å', code: 'KeyA', altKey: true }))
+      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'å', code: 'KeyA', altKey: true })),
     ).toEqual(['Alt+a', 'å']);
   });
 
   it('returns the result of pressing Control+Shift+a', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'A', ctrlKey: true, shiftKey: true }))
+      createHotkeyStrings(
+        new KeyboardEvent('keydown', { key: 'A', ctrlKey: true, shiftKey: true }),
+      ),
     ).toEqual(['Modifier+Shift+a', 'Control+Shift+a', 'Modifier+A', 'Control+A']);
   });
 
@@ -101,8 +103,8 @@ describe('createHotkeyStrings', () => {
           metaKey: true,
           altKey: true,
           shiftKey: true,
-        })
-      )
+        }),
+      ),
     ).toEqual(['Control+Meta+Alt+Shift+a', 'Control+Meta+Alt+A']);
   });
 
@@ -116,8 +118,8 @@ describe('createHotkeyStrings', () => {
           metaKey: true,
           altKey: true,
           shiftKey: true,
-        })
-      )
+        }),
+      ),
     ).toEqual(['Control+Meta+Alt+Shift+a', 'Control+Meta+Alt+A', 'Control+Meta+Å']);
   });
 
@@ -126,8 +128,8 @@ describe('createHotkeyStrings', () => {
   it('returns the result of pressing Shift+1', () => {
     expect(
       createHotkeyStrings(
-        new KeyboardEvent('keydown', { key: '!', code: 'Digit1', shiftKey: true })
-      )
+        new KeyboardEvent('keydown', { key: '!', code: 'Digit1', shiftKey: true }),
+      ),
     ).toEqual(['Shift+1', '!']);
   });
 
@@ -139,15 +141,15 @@ describe('createHotkeyStrings', () => {
 
   it('returns the result of pressing Alt+1 for Mac', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: '¡', code: 'Digit1', altKey: true }))
+      createHotkeyStrings(new KeyboardEvent('keydown', { key: '¡', code: 'Digit1', altKey: true })),
     ).toEqual(['Alt+1', '¡']);
   });
 
   it('returns the result of pressing Control+Shift+1', () => {
     expect(
       createHotkeyStrings(
-        new KeyboardEvent('keydown', { key: '!', code: 'Digit1', ctrlKey: true, shiftKey: true })
-      )
+        new KeyboardEvent('keydown', { key: '!', code: 'Digit1', ctrlKey: true, shiftKey: true }),
+      ),
     ).toEqual(['Modifier+Shift+1', 'Control+Shift+1', 'Modifier+!', 'Control+!']);
   });
 
@@ -161,8 +163,8 @@ describe('createHotkeyStrings', () => {
           metaKey: true,
           altKey: true,
           shiftKey: true,
-        })
-      )
+        }),
+      ),
     ).toEqual(['Control+Meta+Alt+Shift+1', 'Control+Meta+Alt+!']);
   });
 
@@ -176,8 +178,8 @@ describe('createHotkeyStrings', () => {
           metaKey: true,
           altKey: true,
           shiftKey: true,
-        })
-      )
+        }),
+      ),
     ).toEqual(['Control+Meta+Alt+Shift+1', 'Control+Meta+⁄']);
   });
 
@@ -185,7 +187,9 @@ describe('createHotkeyStrings', () => {
 
   it('returns the result of pressing Shift+/', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: '?', code: 'Slash', shiftKey: true }))
+      createHotkeyStrings(
+        new KeyboardEvent('keydown', { key: '?', code: 'Slash', shiftKey: true }),
+      ),
     ).toEqual(['Shift+/', '?']);
   });
 
@@ -197,15 +201,15 @@ describe('createHotkeyStrings', () => {
 
   it('returns the result of pressing Alt+/ for Mac', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: '÷', code: 'Slash', altKey: true }))
+      createHotkeyStrings(new KeyboardEvent('keydown', { key: '÷', code: 'Slash', altKey: true })),
     ).toEqual(['Alt+/', '÷']);
   });
 
   it('returns the result of pressing Control+Shift+/', () => {
     expect(
       createHotkeyStrings(
-        new KeyboardEvent('keydown', { key: '?', code: 'Slash', ctrlKey: true, shiftKey: true })
-      )
+        new KeyboardEvent('keydown', { key: '?', code: 'Slash', ctrlKey: true, shiftKey: true }),
+      ),
     ).toEqual(['Modifier+Shift+/', 'Control+Shift+/', 'Modifier+?', 'Control+?']);
   });
 
@@ -219,8 +223,8 @@ describe('createHotkeyStrings', () => {
           metaKey: true,
           altKey: true,
           shiftKey: true,
-        })
-      )
+        }),
+      ),
     ).toEqual(['Control+Meta+Alt+Shift+/', 'Control+Meta+Alt+?']);
   });
 
@@ -234,8 +238,8 @@ describe('createHotkeyStrings', () => {
           metaKey: true,
           altKey: true,
           shiftKey: true,
-        })
-      )
+        }),
+      ),
     ).toEqual(['Control+Meta+Alt+Shift+/', 'Control+Meta+¿']);
   });
 
@@ -247,32 +251,32 @@ describe('createHotkeyStrings', () => {
 
   it('returns the result of pressing Control', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'Control', ctrlKey: true }))
+      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'Control', ctrlKey: true })),
     ).toEqual(['Modifier', 'Control']);
   });
 
   it('returns the result of pressing Meta', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'Meta', metaKey: true }))
+      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'Meta', metaKey: true })),
     ).toEqual(['Meta']);
   });
 
   it('returns the result of pressing Alt', () => {
     expect(createHotkeyStrings(new KeyboardEvent('keydown', { key: 'Alt', altKey: true }))).toEqual(
-      ['Alt']
+      ['Alt'],
     );
   });
 
   it('returns the result of pressing Shift', () => {
     expect(
-      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'Shift', shiftKey: true }))
+      createHotkeyStrings(new KeyboardEvent('keydown', { key: 'Shift', shiftKey: true })),
     ).toEqual(['Shift']);
   });
 
   it('returns the result of pressing Control+Shift', () => {
     ['Control', 'Shift'].forEach((key) => {
       expect(
-        createHotkeyStrings(new KeyboardEvent('keydown', { key, ctrlKey: true, shiftKey: true }))
+        createHotkeyStrings(new KeyboardEvent('keydown', { key, ctrlKey: true, shiftKey: true })),
       ).toEqual(['Modifier+Shift', 'Control+Shift']);
     });
   });
@@ -287,8 +291,8 @@ describe('createHotkeyStrings', () => {
             metaKey: true,
             altKey: true,
             shiftKey: true,
-          })
-        )
+          }),
+        ),
       ).toEqual(['Control+Meta+Alt+Shift']);
     });
   });
