@@ -1,3 +1,5 @@
+.parcel-cache
+.parcel-dist
 coverage
 dist
 node_modules
