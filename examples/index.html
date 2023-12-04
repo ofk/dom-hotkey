@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>dom-hotkey examples</title>
+  </head>
+  <body>
+    <h1>dom-hotkey examples</h1>
+    <script type="module">
+      const buttons = document.body.appendChild(document.createElement('p'));
+      const results = document.body.appendChild(document.createElement('p'));
+
+      ['a', 'Modifier+z', ',', 'Alt+a', 'x,y', 'z,,', ',,w', 's q'].forEach((key) => {
+        const button = document.createElement('button');
+        button.onclick = () => {
+          const result = `pressed ${key}`;
+          results.textContent = result;
+          console.log(result);
+        };
+        button.textContent = key;
+        button.setAttribute('data-hotkey', key);
+        buttons.appendChild(button);
+        buttons.appendChild(document.createTextNode(' '));
+      });
+    </script>
+    <script type="module">
+      import { setup } from '../src';
+      setup();
+    </script>
+  </body>
+</html>

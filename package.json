@@ -13,6 +13,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "microbundle --tsconfig tsconfig.build.json",
+    "dev": "npx parcel serve --dist-dir .parcel-dist 'examples/index.html'",
     "lint": "run-s -c lint:*",
     "lint:eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:package-json": "prettier-package-json -l",
