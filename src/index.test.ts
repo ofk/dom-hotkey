@@ -10,7 +10,7 @@ const wait = (ms: number): Promise<void> =>
   });
 
 describe('setup', () => {
-  it('tests click event', async () => {
+  it('tests click event', () => {
     let count = 0;
     document.body.innerHTML = '<button data-hotkey="a">a</button>';
     document.querySelector('button')!.addEventListener('click', () => {
@@ -123,24 +123,24 @@ describe('setup', () => {
     const remover = setup();
     document.querySelector('button')!.focus();
     document.activeElement!.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'g', bubbles: true })
+      new KeyboardEvent('keydown', { key: 'g', bubbles: true }),
     );
     document.activeElement!.dispatchEvent(new KeyboardEvent('keyup', { key: 'g', bubbles: true }));
     expect(count).toEqual(1);
     document.querySelector('input')!.focus();
     document.activeElement!.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'g', bubbles: true })
+      new KeyboardEvent('keydown', { key: 'g', bubbles: true }),
     );
     document.activeElement!.dispatchEvent(new KeyboardEvent('keyup', { key: 'g', bubbles: true }));
     expect(count).toEqual(1);
     remover();
   });
 
-  it('renderes no error message if all hotkey are valid', async () => {
+  it('renderes no error message if all hotkey are valid', () => {
     const oldNodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
-    const spyWarn = jest.spyOn(console, 'warn').mockImplementation((x) => x);
-    const spyError = jest.spyOn(console, 'error').mockImplementation((x) => x);
+    const spyWarn = jest.spyOn(console, 'warn').mockImplementation((x: unknown) => x);
+    const spyError = jest.spyOn(console, 'error').mockImplementation((x: unknown) => x);
 
     document.body.innerHTML = `
       <a data-hotkey="x" />
@@ -162,11 +162,11 @@ describe('setup', () => {
     process.env.NODE_ENV = oldNodeEnv;
   });
 
-  it('renderes error message if presses undefined hotkey', async () => {
+  it('renderes error message if presses undefined hotkey', () => {
     const oldNodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'development';
-    const spyWarn = jest.spyOn(console, 'warn').mockImplementation((x) => x);
-    const spyError = jest.spyOn(console, 'error').mockImplementation((x) => x);
+    const spyWarn = jest.spyOn(console, 'warn').mockImplementation((x: unknown) => x);
+    const spyError = jest.spyOn(console, 'error').mockImplementation((x: unknown) => x);
 
     document.body.innerHTML = `
       <a data-hotkey=" X " />

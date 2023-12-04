@@ -101,7 +101,7 @@ describe('getElementByHotkeyString', () => {
 
     document.body.innerHTML = '<div data-hotkey="Modifier+x"></div>';
     expect(getElementByHotkeyString(document, 'data-hotkey', 'Modifier+x')).toBeInstanceOf(
-      HTMLElement
+      HTMLElement,
     );
 
     document.body.innerHTML = '<div data-hotkey="&quot;"></div>';

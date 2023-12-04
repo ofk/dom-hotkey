@@ -4,7 +4,7 @@ export function isFormField(elem: unknown): boolean {
   }
 
   const name = elem.tagName;
-  const type = (elem.getAttribute('type') || '').toLowerCase();
+  const type = (elem.getAttribute('type') ?? '').toLowerCase();
   return !!(
     name === 'SELECT' ||
     name === 'TEXTAREA' ||
@@ -29,10 +29,10 @@ export function fireDeterminedAction(elem: HTMLElement): void {
 export function getElementByHotkeyString(
   root: HTMLElement | Document,
   attr: string,
-  hotkey: string
+  hotkey: string,
 ): HTMLElement | null {
   const value = CSS.escape(hotkey);
   return root.querySelector<HTMLElement>(
-    `[${attr}="${value}"],[${attr}^="${value},"],[${attr}*=",${value},"],[${attr}$=",${value}"]`
+    `[${attr}="${value}"],[${attr}^="${value},"],[${attr}*=",${value},"],[${attr}$=",${value}"]`,
   );
 }

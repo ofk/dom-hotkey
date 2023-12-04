@@ -2,7 +2,7 @@ import { DOMHotkey } from './DOMHotkey';
 import { createHotkeyStrings, metaModifierKey } from './hotkeyStrings';
 
 export function setup(
-  options: NonNullable<ConstructorParameters<typeof DOMHotkey>[0]> = {}
+  options: NonNullable<ConstructorParameters<typeof DOMHotkey>[0]> = {},
 ): () => void {
   const domHotkey = new DOMHotkey(options);
   const reportedAttributes: Record<string, true> = {};
@@ -15,10 +15,10 @@ export function setup(
       console.warn(
         `No elements found matching hotkeys: ${domHotkey.keys
           .map((key) => createHotkeyStrings(key.state)[0])
-          .join(' ')}`
+          .join(' ')}`,
       );
       const elems = Array.from(
-        domHotkey.root.querySelectorAll<HTMLElement>(`[${domHotkey.attribute}]`)
+        domHotkey.root.querySelectorAll<HTMLElement>(`[${domHotkey.attribute}]`),
       ).filter((elem) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const attr = elem.getAttribute(domHotkey.attribute)!;
@@ -41,14 +41,14 @@ export function setup(
                 unnecessarySpaces: boolean,
                 unknownModifierKeys: boolean,
                 invalidOrder: boolean,
-                invalidKey: boolean
+                invalidKey: boolean,
               ];
               const keysString = rawKeysString.trim().replace(/\s+/g, ' ');
               if (keysString !== rawKeysString) {
                 error[kErrorUnnecessarySpaces] = true;
               }
               const keyStrings = keysString.match(
-                /(?:(?:c\w*?tr|meta|sup|win|mod|co?m\w*?d|alt|op|shift)\w*\s*\+\s*)*(?:\w+|\S)/gi
+                /(?:(?:c\w*?tr|meta|sup|win|mod|co?m\w*?d|alt|op|shift)\w*\s*\+\s*)*(?:\w+|\S)/gi,
               );
               const state = {
                 modKey: false,
@@ -130,9 +130,9 @@ export function setup(
                               [metaModifierKey ? 'ctrlKey' : 'metaKey']: false,
                             }
                           : {}),
-                      }).reverse()[state.modKey ? 1 : 0]
+                      }).reverse()[state.modKey ? 1 : 0],
                   )
-                  .join(' ')
+                  .join(' '),
               )
               .join(',');
             if (originalHotkey !== recommendedHotkey)
@@ -145,7 +145,7 @@ export function setup(
             [
               `Found ${errorMessages.length} elements with the wrong ${domHotkey.attribute} attribute:`,
               ...errorMessages,
-            ].join('\n')
+            ].join('\n'),
           );
         }
       }
@@ -155,7 +155,7 @@ export function setup(
     domHotkey.keyup(evt);
   };
 
-  const doc = domHotkey.root.ownerDocument || domHotkey.root;
+  const doc = domHotkey.root.ownerDocument ?? domHotkey.root;
   doc.addEventListener('keydown', keydownHandler);
   doc.addEventListener('keyup', keyupHandler);
 

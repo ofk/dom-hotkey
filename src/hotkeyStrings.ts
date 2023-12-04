@@ -3,7 +3,7 @@ import type { HotkeyState } from './hotkeyState';
 export type HotkeyStrings = [string, ...string[]];
 
 export const metaModifierKey = /Mac|iPod|iPhone|iPad/.test(
-  typeof navigator !== 'undefined' ? navigator.platform : ''
+  typeof navigator !== 'undefined' ? navigator.platform : '',
 );
 
 function toCtrlMetaStrings({ ctrlKey, metaKey }: HotkeyState): HotkeyStrings {
@@ -80,7 +80,7 @@ export function createHotkeyStrings(state: HotkeyState): HotkeyStrings {
       ...result,
       ...ctrlMetaStrings.map((ctrlMeta) => `${ctrlMeta}${altShiftKey}`.slice(1)),
     ],
-    [] as string[]
+    [] as string[],
   );
   return hotkeys as HotkeyStrings;
 }

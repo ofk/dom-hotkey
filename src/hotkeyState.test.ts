@@ -14,7 +14,7 @@ describe('copyAsHotkeyState', () => {
 
   it('returns the result of pressing Control+z', () => {
     expect(
-      copyAsHotkeyState(new KeyboardEvent('keydown', { key: 'z', code: 'KeyZ', ctrlKey: true }))
+      copyAsHotkeyState(new KeyboardEvent('keydown', { key: 'z', code: 'KeyZ', ctrlKey: true })),
     ).toEqual({
       ctrlKey: true,
       metaKey: false,
@@ -37,8 +37,8 @@ describe('equalHotkeyState', () => {
           altKey: false,
           shiftKey: false,
           key: 'z',
-        }
-      )
+        },
+      ),
     ).toBe(true);
   });
 
@@ -52,8 +52,8 @@ describe('equalHotkeyState', () => {
           altKey: false,
           shiftKey: false,
           key: 'z',
-        }
-      )
+        },
+      ),
     ).toBe(false);
   });
 });
@@ -61,13 +61,15 @@ describe('equalHotkeyState', () => {
 describe('isModifierKeyPressed', () => {
   it('tests the result of pressing z', () => {
     expect(isModifierKeyPressed(new KeyboardEvent('keydown', { key: 'z', code: 'KeyZ' }))).toBe(
-      false
+      false,
     );
   });
 
   it('tests the result of pressing Shift+z', () => {
     expect(
-      isModifierKeyPressed(new KeyboardEvent('keydown', { key: 'z', code: 'KeyZ', shiftKey: true }))
+      isModifierKeyPressed(
+        new KeyboardEvent('keydown', { key: 'z', code: 'KeyZ', shiftKey: true }),
+      ),
     ).toBe(true);
   });
 });
